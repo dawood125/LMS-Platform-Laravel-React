@@ -1,20 +1,24 @@
-import { useState } from 'react'
-import Home from './components/pages/Home'
-import { BrowserRouter, Routes, Route } from 'react-router-dom'
-import Courses from './components/pages/Courses'
-import Login from './components/pages/Login'
-import Detail from './components/pages/Detail'
-import Register from './components/pages/Register'
-import WatchCourses from './components/pages/account/WatchCourses'
-import ChangePassword from './components/pages/account/ChangePassword'
-import MyCourses from './components/pages/account/MyCourses'
-import MyLearning from './components/pages/account/MyLearning'
+import { useState } from "react";
+import Home from "./components/pages/Home";
+import { BrowserRouter, Routes, Route } from "react-router-dom";
+import Courses from "./components/pages/Courses";
+import Login from "./components/pages/Login";
+import Detail from "./components/pages/Detail";
+import Register from "./components/pages/Register";
+import WatchCourses from "./components/pages/account/WatchCourses";
+import ChangePassword from "./components/pages/account/ChangePassword";
+import MyCourses from "./components/pages/account/MyCourses";
+import MyLearning from "./components/pages/account/MyLearning";
+import { Toaster } from "react-hot-toast";
+import Dashboard from "./components/pages/account/Dashboard";
+import RequireAuth from "./components/common/RequireAuth";
+import CreateCourse from "./components/pages/account/courses/CreateCourse";
 
 function App() {
-  const [count, setCount] = useState(0)
 
   return (
     <>
+      <Toaster position="top-right" />
       <BrowserRouter>
         <Routes>
           <Route path="/" element={<Home />} />
@@ -26,10 +30,28 @@ function App() {
           <Route path="/account/change-password" element={<ChangePassword />} />
           <Route path="/account/my-courses" element={<MyCourses />} />
           <Route path="/account/my-learning" element={<MyLearning />} />
+          <Route
+            path="/account/dashboard"
+            element={
+              <RequireAuth>
+                <Dashboard />
+                <CreateCourse></CreateCourse>
+              </RequireAuth>
+            }
+          />
+
+          <Route
+            path="/account/courses/create"
+            element={
+              <RequireAuth>
+                <CreateCourse></CreateCourse>
+              </RequireAuth>
+            }
+          />
         </Routes>
       </BrowserRouter>
     </>
-  )
+  );
 }
 
-export default App
+export default App;
