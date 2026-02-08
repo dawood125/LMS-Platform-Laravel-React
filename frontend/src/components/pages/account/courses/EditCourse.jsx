@@ -6,6 +6,7 @@ import { apiUrl, authToken } from "../../../common/Config";
 import toast from "react-hot-toast";
 import Layout from "../../../common/Layout";
 import ManagedOutcome from "./ManagedOutcome";
+import ManageRequirement from "./ManageRequirement";
 
 const EditCourse = () => {
   const [categories, setCategories] = useState([]);
@@ -315,6 +316,7 @@ const EditCourse = () => {
                 </div>
                 <div className="col-md-5">
                   <ManagedOutcome></ManagedOutcome>
+                  <ManageRequirement></ManageRequirement>
                 </div>
               </div>
             </div>

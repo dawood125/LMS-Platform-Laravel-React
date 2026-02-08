@@ -42,7 +42,7 @@ function App() {
           />
 
           <Route
-            path="/account/courses/create"
+            path="/account/my-courses/create"
             element={
               <RequireAuth>
                 <CreateCourse></CreateCourse>
