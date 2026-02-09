@@ -8,7 +8,10 @@ use App\Models\Course;
 use App\Models\Language;
 use App\Models\Level;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\File as FacadesFile;
 use Illuminate\Support\Facades\Validator;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
 
 class CourseController extends Controller
 {
@@ -47,7 +50,7 @@ class CourseController extends Controller
 
     public function show($id)
     {
-        $course = Course::find($id);
+        $course = Course::with('chapters','chapters.lessons')->find($id);
 
         if (!$course) {
             return response()->json([
@@ -138,6 +141,65 @@ class CourseController extends Controller
             'categories' => $categories,
             'levels' => $levels,
             'languages' => $languages,
+        ]);
+    }
+
+    public function saveCourseImage(Request $request, $id)
+    {
+        $Validator = Validator::make($request->all(), [
+            'image' => 'required|image|mimes:jpeg,png,jpg,gif|max:2048',
+        ]);
+
+        if ($Validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Validation failed',
+                'errors' => $Validator->errors()
+            ], 422);
+        }
+
+        $course = Course::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if ($course && $course->image) {
+            FacadesFile::delete(public_path($course->image));
+            //Delete old thumbnail
+            $oldThumbnailPath = public_path('uploads/courses/thumbnails/' . basename($course->image));
+            if (FacadesFile::exists($oldThumbnailPath)) {
+                FacadesFile::delete($oldThumbnailPath);
+            }
+        }
+
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Course not found'
+            ], 404);
+        }
+
+        $image = $request->file('image');
+        $imageName = time() . '_' . $id . '.' . $image->getClientOriginalExtension();
+        $image->move(public_path('uploads/courses'), $imageName);
+
+        //Create small Thumbnail
+        $thumbnailPath = public_path('uploads/courses/thumbnails');
+        if (!FacadesFile::exists($thumbnailPath)) {
+            FacadesFile::makeDirectory($thumbnailPath, 0755, true);
+        }
+
+        $manager = new ImageManager(new Driver());
+        $thumbnail = $manager->read(public_path('uploads/courses/' . $imageName));
+        $thumbnail->resize(750, 450);
+        $thumbnail->save($thumbnailPath . '/' . $imageName);
+
+        $course->image = 'uploads/courses/' . $imageName;
+        $course->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Course image uploaded successfully',
+            'data' => $course
         ]);
     }
 }

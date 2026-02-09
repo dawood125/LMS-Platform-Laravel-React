@@ -1,17 +1,20 @@
 import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import UserSidebar from "../../../common/UserSidebar";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { apiUrl, authToken } from "../../../common/Config";
 import toast from "react-hot-toast";
 import Layout from "../../../common/Layout";
 import ManagedOutcome from "./ManagedOutcome";
 import ManageRequirement from "./ManageRequirement";
+import EditCover from "./EditCover";
+import ManageChapter from "./ManageChapter";
 
 const EditCourse = () => {
   const [categories, setCategories] = useState([]);
   const [levels, setLevels] = useState([]);
   const [languages, setLanguages] = useState([]);
+  const [course, setCourse] = useState({});
 
 
   const courseId = window.location.pathname.split("/").pop();
@@ -36,6 +39,7 @@ const EditCourse = () => {
       const result = await response.json();
       if (result.status == 200) {
         console.log(result.data);
+        setCourse(result.data);
         reset({
           title: result.data.title,
           category: result.data.category_id,
@@ -313,10 +317,13 @@ const EditCourse = () => {
                       </div>
                     </div>
                   </form>
+
+                  <ManageChapter course={course} param={course.id}></ManageChapter>
                 </div>
                 <div className="col-md-5">
                   <ManagedOutcome></ManagedOutcome>
                   <ManageRequirement></ManageRequirement>
+                  <EditCover course={course} setCourse={setCourse}></EditCover>
                 </div>
               </div>
             </div>
