@@ -1,10 +1,12 @@
-import React, { useEffect, useRef, useState } from "react";
+import React, { useEffect, useRef, useState, useMemo } from "react";
 import { Link, useParams } from "react-router-dom";
 import Layout from "../../../common/Layout";
 import UserSidebar from "../../../common/UserSidebar";
-import { useForm } from "react-hook-form";
+import { set, useForm } from "react-hook-form";
 import { apiUrl, authToken } from "../../../common/Config";
 import JoditEditor from "jodit-react";
+import toast from "react-hot-toast";
+import EditVideo from "./EditVideo";
 
 const EditLesson = () => {
   const {
@@ -26,7 +28,31 @@ const EditLesson = () => {
   const params = useParams();
 
   const onSubmit = (data) => {
-    console.log(data);
+    setLoading(true);
+    fetch(apiUrl + "/lessons/" + params.id, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({
+        ...data,
+        description: description,
+      }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        setLoading(false);
+        if (result.status == 200) {
+          toast.success("Lesson updated successfully");
+        } else {
+          toast.error("Error updating lesson");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating lesson:", error);
+      });
   };
 
   useEffect(() => {
@@ -68,7 +94,6 @@ const EditLesson = () => {
             title: result.data.title,
             chapter_id: String(result.data.chapter_id),
             status: result.data.status,
-            is_free: result.data.is_free,
             description: result.data.description,
             duration: result.data.duration,
           });
@@ -83,10 +108,14 @@ const EditLesson = () => {
       });
   }, []);
 
-  const editorConfig = {
-    readonly: false,
-    height: 300,
-  };
+  const editorConfig = useMemo(
+    () => ({
+      readonly: false,
+      height: 300,
+      placeholder: "Start typing...",
+    }),
+    [],
+  );
 
   return (
     <Layout>
@@ -111,7 +140,7 @@ const EditLesson = () => {
               <div className="d-flex justify-content-between align-items-center">
                 <h2 className="h4 mb-0 pb-0">Edit Lesson</h2>
                 <Link
-                  to="/account/my-courses"
+                  to={`/account/my-courses/edit/${params.courseId}`}
                   className="btn btn-success btn-sm"
                 >
                   Back
@@ -130,7 +159,7 @@ const EditLesson = () => {
                     Basic Information
                   </h4>
 
-                  <form onSubmit={handleSubmit(onSubmit)}>
+                  <form onSubmit={handleSubmit(onSubmit)} noValidate>
                     <div className="mb-3">
                       <label htmlFor="title" className="form-label">
                         Title
@@ -182,7 +211,7 @@ const EditLesson = () => {
                       </label>
                       <input
                         type="number"
-                        className="form-control"
+                        className={`form-control ${errors.duration ? "is-invalid" : ""}`}
                         id="duration"
                         placeholder="20"
                         {...register("duration", {
@@ -193,6 +222,11 @@ const EditLesson = () => {
                           },
                         })}
                       />
+                      {errors.duration && (
+                        <span className="text-danger">
+                          {errors.duration.message}
+                        </span>
+                      )}
                     </div>
 
                     <div className="mb-3">
@@ -210,15 +244,18 @@ const EditLesson = () => {
                             shouldValidate: true,
                           });
                         }}
-                        onChange={(newContent) => {
-                          setDescription(newContent);
-                        }}
                       />
                       <input
                         type="hidden"
                         id="description"
+                        className={`form-control ${errors.description ? "is-invalid" : ""}`}
                         {...register("description")}
                       />
+                      {errors.description && (
+                        <span className="text-danger">
+                          {errors.description.message}
+                        </span>
+                      )}
                     </div>
 
                     <div className="mb-3">
@@ -227,7 +264,7 @@ const EditLesson = () => {
                       </label>
                       <select
                         id="status"
-                        className="form-select"
+                        className={`form-select ${errors.status ? "is-invalid" : ""}`}
                         {...register("status", {
                           required: "Status is required",
                         })}
@@ -236,30 +273,40 @@ const EditLesson = () => {
                         <option value={1}>Active</option>
                         <option value={0}>Inactive</option>
                       </select>
+                      {errors.status && (
+                        <span className="text-danger">
+                          {errors.status.message}
+                        </span>
+                      )}
                     </div>
 
                     <div className="form-check mb-3">
                       <input
-                        className="form-check-input"
+                        className={`form-check-input ${errors.is_free_preview ? "is-invalid" : ""}`}
                         type="checkbox"
                         id="freeLesson"
+                        {...register("is_free_preview")}
                         checked={checked}
                         onChange={(e) => {
                           setChecked(e.target.checked);
-                          setValue("is_free", e.target.checked ? "yes" : "no", {
-                            shouldDirty: true,
-                            shouldValidate: true,
-                          });
                         }}
-                        {...register("is_free")}
                       />
+                      {errors.is_free_preview && (
+                        <span className="text-danger">
+                          {errors.is_free_preview.message}
+                        </span>
+                      )}
                       <label className="form-check-label" htmlFor="freeLesson">
                         Free Lesson
                       </label>
                     </div>
 
-                    <button type="submit" className="btn btn-success">
-                      Save
+                    <button
+                      type="submit"
+                      className="btn btn-success"
+                      disabled={loading}
+                    >
+                      {loading ? "Updating..." : "Update Lesson"}
                     </button>
                   </form>
                 </div>
@@ -267,22 +314,9 @@ const EditLesson = () => {
             </div>
 
             <div className="col-lg-3">
-              <div className="card border-0 shadow-lg mb-4">
-                <div className="card-body p-4">
-                  <h4 className="mb-3 h5 border-bottom pb-3">Video</h4>
-                  <div className="border rounded bg-light text-center p-3 mb-3">
-                    <div className="text-muted">
-                      Drag & Drop your files or{" "}
-                      <span className="text-primary">Browse</span>
-                    </div>
-                  </div>
-                  <div className="ratio ratio-16x9 bg-dark rounded overflow-hidden">
-                    <video controls>
-                      <source src="movie.mp4" type="video/mp4" />
-                    </video>
-                  </div>
-                </div>
-              </div>
+              {lessonData && (
+                <EditVideo lesson={lessonData} setLesson={setLessonData} />
+              )}
             </div>
           </div>
         </div>

@@ -50,7 +50,7 @@ class CourseController extends Controller
 
     public function show($id)
     {
-        $course = Course::with('chapters','chapters.lessons')->find($id);
+        $course = Course::with('chapters', 'chapters.lessons')->find($id);
 
         if (!$course) {
             return response()->json([
@@ -199,6 +199,31 @@ class CourseController extends Controller
         return response()->json([
             'status' => 200,
             'message' => 'Course image uploaded successfully',
+            'data' => $course
+        ]);
+    }
+
+    public function changeStatus(Request $request, $id)
+    {
+        $course = Course::where('id', $id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Course not found'
+            ], 404);
+        }
+
+        $course->status = $request->input('status', $course->status);
+        $course->save();
+
+        $message = ($course->status == 1) ? 'Course published successfully' : 'Course unpublished successfully';
+
+        return response()->json([
+            'status' => 200,
+            'message' => $message,
             'data' => $course
         ]);
     }

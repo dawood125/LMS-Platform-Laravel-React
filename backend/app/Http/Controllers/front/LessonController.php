@@ -3,8 +3,13 @@
 namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Chapter;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
+use Intervention\Image\ImageManager;
+use Intervention\Image\Drivers\Gd\Driver;
+use Illuminate\Support\Facades\File as FacadesFile;
+use Illuminate\Support\Facades\Validator;
 
 class LessonController extends Controller
 {
@@ -32,7 +37,7 @@ class LessonController extends Controller
         $lesson = new Lesson();
         $lesson->chapter_id = $request->chapter_id;
         $lesson->title = $request->title;
-        $lesson->status = $request->status ?? 0; 
+        $lesson->status = $request->status ?? 0;
         $lesson->sort_order = $request->sort_order ?? 1000;
         $lesson->save();
 
@@ -64,7 +69,7 @@ class LessonController extends Controller
     {
         $request->validate([
             'title' => 'required|string|max:255',
-            'is_free_preview' => 'nullable|in:yes,no',
+            'is_free_preview' => 'nullable|boolean',
             'duration' => 'nullable|integer|min:0',
             'video' => 'nullable|string|max:255',
             'description' => 'nullable|string',
@@ -84,7 +89,7 @@ class LessonController extends Controller
         $lesson->title = $request->title;
 
         if ($request->has('is_free_preview')) {
-            $lesson->is_free_preview = $request->is_free_preview;
+            $lesson->is_free_preview = ($request->is_free_preview === false) ? "no" : "yes";
         }
 
         if ($request->has('duration')) {
@@ -127,11 +132,59 @@ class LessonController extends Controller
             ], 404);
         }
 
+        $chapterId = $lesson->chapter_id;
+
         $lesson->delete();
+
+        $chapter=Chapter::where('id',$chapterId)->with('lessons')->first();
 
         return response()->json([
             'status' => 200,
-            'message' => 'Lesson deleted successfully'
+            'message' => 'Lesson deleted successfully',
+            'data' => $chapter
+        ]);
+    }
+
+    public function saveVideo(Request $request, $id)
+    {
+        $Validator = Validator::make($request->all(), [
+            'video' => 'required|file|mimes:mp4,avi,mov|max:512000' 
+        ]);
+
+        if ($Validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Validation failed',
+                'errors' => $Validator->errors()
+            ], 422);
+        }
+
+        $lesson = Lesson::where('id', $id)->first();
+
+        if ($lesson && $lesson->video) {
+            if (FacadesFile::exists(public_path($lesson->video))) {
+                FacadesFile::delete(public_path($lesson->video));
+            }
+        }
+
+        if (!$lesson) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Lesson not found'
+            ], 404);
+        }
+
+        $video = $request->file('video');
+        $videoName = time() . '_' . $id . '.' . $video->getClientOriginalExtension();
+        $video->move(public_path('uploads/courses/video'), $videoName);
+
+        $lesson->video = 'uploads/courses/video/' . $videoName;
+        $lesson->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Lesson video updated successfully',
+            'data' => $lesson
         ]);
     }
 }

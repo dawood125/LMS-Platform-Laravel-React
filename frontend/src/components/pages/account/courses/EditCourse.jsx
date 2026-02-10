@@ -16,9 +16,8 @@ const EditCourse = () => {
   const [languages, setLanguages] = useState([]);
   const [course, setCourse] = useState({});
 
-
   const courseId = window.location.pathname.split("/").pop();
-  const[loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
   const {
     handleSubmit,
@@ -109,10 +108,35 @@ const EditCourse = () => {
       });
   };
 
+  const ChangeStatus =async (course) => {
+    const newStatus = course.status === 1 ? 0 : 1;
+    fetch(apiUrl + "/change-course-status/" + course.id, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        accept: "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+      body: JSON.stringify({ status: newStatus }),
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.status == 200) {
+          toast.success(result.message);
+          setCourse({ ...course, status: result.data.status });
+        } else {
+          toast.error("Failed to update course status");
+        }
+      })
+      .catch((error) => {
+        console.error("Error updating course status:", error);
+        toast.error("Failed to update course status. Please try again.");
+      });
+  }
+
   React.useEffect(() => {
     courseMetadata();
   }, []);
-
 
   return (
     <Layout>
@@ -132,6 +156,19 @@ const EditCourse = () => {
             <div className="col-md-12 mt-5 mb-3">
               <div className="d-flex justify-content-between">
                 <h2 className="h4 mb-0 pb-0">Edit Course</h2>
+                <div>
+                {course.status == 1 ? (
+                    <Link onClick={()=> ChangeStatus(course)} className="btn btn-secondary btn-sm me-2">Unpublish</Link>
+                  ) : (
+                    <Link onClick={()=> ChangeStatus(course)} className="btn btn-success btn-sm me-2">Publish</Link>
+                  )}
+                  <Link
+                    to="/account/my-courses"
+                    className="btn btn-primary btn-sm"
+                  >
+                    Back to My Courses
+                  </Link>
+                </div>
               </div>
             </div>
             <div className="col-lg-3 account-sidebar">
@@ -311,14 +348,21 @@ const EditCourse = () => {
                             </div>
                           )}
                         </div>
-                        <button disabled={loading} type="submit" className="btn btn-primary">
-                          {loading?"Updating...":"Update Course"}
+                        <button
+                          disabled={loading}
+                          type="submit"
+                          className="btn btn-primary"
+                        >
+                          {loading ? "Updating..." : "Update Course"}
                         </button>
                       </div>
                     </div>
                   </form>
 
-                  <ManageChapter course={course} param={course.id}></ManageChapter>
+                  <ManageChapter
+                    course={course}
+                    param={course.id}
+                  ></ManageChapter>
                 </div>
                 <div className="col-md-5">
                   <ManagedOutcome></ManagedOutcome>

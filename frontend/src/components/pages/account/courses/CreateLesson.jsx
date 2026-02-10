@@ -3,7 +3,7 @@ import Modal from "react-bootstrap/Modal";
 import toast from "react-hot-toast";
 import { apiUrl, authToken } from "../../../common/Config";
 
-const CreateLesson = ({ show, onHide, chapters, onCreated }) => {
+const CreateLesson = ({ show, onHide, chapters, onCreated, setChapters }) => {
   const [chapterId, setChapterId] = useState("");
   const [title, setTitle] = useState("");
   const [loading, setLoading] = useState(false);
@@ -50,6 +50,13 @@ const CreateLesson = ({ show, onHide, chapters, onCreated }) => {
       .then((response) => response.json())
       .then((result) => {
         if (result.status == 200) {
+          setChapters({
+            type: "ADD_LESSON",
+            payload: {
+              chapterId: Number(chapterId),
+              lesson: result.data,
+            },
+          });
           toast.success("Lesson created successfully");
           setTitle("");
           if (onCreated) {

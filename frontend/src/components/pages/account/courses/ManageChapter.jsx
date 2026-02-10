@@ -6,7 +6,8 @@ import Accordion from "react-bootstrap/Accordion";
 import Modal from "react-bootstrap/Modal";
 import CreateLesson from "./CreateLesson";
 import { FiEdit2, FiTrash2 } from "react-icons/fi";
-
+import LessonSort from "./LessonSort";
+import SortChapter from "./sortChapter";
 
 const ManageChapter = ({ course, param }) => {
   const [loading, setLoading] = useState(false);
@@ -17,6 +18,9 @@ const ManageChapter = ({ course, param }) => {
   const [editId, setEditId] = useState(null);
   const [editTitle, setEditTitle] = useState("");
   const [showCreateLessonModal, setShowCreateLessonModal] = useState(false);
+  const [showLessonSortModal, setShowLessonSortModal] = useState(false);
+  const [lessondata, setLessondata] = useState(null);
+  const [showChapterSortModal, setShowChapterSortModal] = useState(false);
 
   const [chapters, setChapters] = useReducer(chapterReducer, []);
 
@@ -26,10 +30,29 @@ const ManageChapter = ({ course, param }) => {
         return action.payload;
       case "ADD_CHAPTER":
         return [...state, action.payload];
+      case "ADD_LESSON":
+        return state.map((chapter) => {
+          if (chapter.id !== action.payload.chapterId) return chapter;
+          const existing = Array.isArray(chapter.lessons)
+            ? chapter.lessons
+            : [];
+          return {
+            ...chapter,
+            lessons: [...existing, action.payload.lesson],
+          };
+        });
       case "UPDATE_CHAPTER":
-        return state.map((chapter) =>
-          chapter.id === action.payload.id ? action.payload : chapter,
-        );
+        return state.map((chapter) => {
+          if (chapter.id !== action.payload.id) return chapter;
+          return {
+            ...chapter,
+            ...action.payload,
+            lessons:
+              action.payload.lessons !== undefined
+                ? action.payload.lessons
+                : chapter.lessons,
+          };
+        });
       case "REMOVE_CHAPTER":
         return state.filter((chapter) => chapter.id !== action.payload.id);
       default:
@@ -42,6 +65,7 @@ const ManageChapter = ({ course, param }) => {
     register,
     formState: { errors },
     setError,
+    reset,
   } = useForm({});
 
   const onSubmit = (data) => {
@@ -63,6 +87,7 @@ const ManageChapter = ({ course, param }) => {
         if (result.status == 200) {
           setChapters({ type: "ADD_CHAPTER", payload: result.data });
           toast.success("Chapter created successfully");
+          reset({ title: "" });
         } else {
           toast.error("Failed to create chapter");
         }
@@ -85,6 +110,11 @@ const ManageChapter = ({ course, param }) => {
     setEditId(chapter.id);
     setEditTitle(chapter.title || "");
     setShowEditModal(true);
+  };
+
+  const handleshowLessonSortModal = (chapter) => {
+    setLessondata(chapter);
+    setShowLessonSortModal(true);
   };
 
   const handleUpdate = () => {
@@ -154,19 +184,70 @@ const ManageChapter = ({ course, param }) => {
       });
   };
 
+  const deleteLesson = (lessonId) => {
+    if (!window.confirm("Are you sure you want to delete this lesson?")) {
+      return;
+    }
+
+    fetch(`${apiUrl}/lessons/${lessonId}`, {
+      method: "DELETE",
+      headers: {
+        accept: "application/json",
+        Authorization: `Bearer ${authToken}`,
+      },
+    })
+      .then((response) => response.json())
+      .then((result) => {
+        if (result.status == 200) {
+          const updatedChapter = result.data;
+          setChapters({ type: "UPDATE_CHAPTER", payload: updatedChapter });
+          toast.success("Lesson deleted successfully");
+        } else {
+          toast.error("Failed to delete lesson");
+        }
+      })
+      .catch((error) => {
+        console.error("Delete lesson error:", error);
+        toast.error("Failed to delete lesson");
+      });
+  };
+
+  const handleLessonReorder = (chapterId, updatedLessons) => {
+    const chapterToUpdate = chapters.find((c) => c.id === chapterId);
+
+    if (chapterToUpdate) {
+      const updatedChapter = { ...chapterToUpdate, lessons: updatedLessons };
+
+      setChapters({ type: "UPDATE_CHAPTER", payload: updatedChapter });
+    }
+  };
+  const handleChapterReorder = (updatedChapters) => {
+    setChapters({ type: "SET_CHAPTERS", payload: updatedChapters });
+  };
+
   return (
     <div className="card border-0 shadow-lg mb-4">
       <div className="card-body p-4">
         <div className="d-flex justify-content-between align-items-center mb-3 border-bottom pb-3">
           <h4 className="h5 mb-0">Chapter</h4>
-          <button
-            type="button"
-            className="btn btn-success"
-            onClick={() => setShowCreateLessonModal(true)}
-            disabled={chapters.length === 0}
-          >
-            Create Lesson
-          </button>
+          <div className="d-flex gap-2">
+            <button
+              type="button"
+              className="btn btn-outline-dark"
+              onClick={() => setShowChapterSortModal(true)}
+              disabled={chapters.length === 0}
+            >
+              Reorder Chapters
+            </button>
+            <button
+              type="button"
+              className="btn btn-success"
+              onClick={() => setShowCreateLessonModal(true)}
+              disabled={chapters.length === 0}
+            >
+              Create Lesson
+            </button>
+          </div>
         </div>
         <form onSubmit={handleSubmit(onSubmit)}>
           <div className="mb-3">
@@ -195,7 +276,12 @@ const ManageChapter = ({ course, param }) => {
               <Accordion.Body>
                 <div className="d-flex justify-content-between align-items-center mb-2">
                   <div className="fw-semibold">Lessons</div>
-                  <button type="button" className="btn btn-link p-0 text-decoration-none" style={{ color: "#000" }} >
+                  <button
+                    onClick={() => handleshowLessonSortModal(chapter)}
+                    type="button"
+                    className="btn btn-link p-0 text-decoration-none"
+                    style={{ color: "#000" }}
+                  >
                     Reorder Lessons
                   </button>
                 </div>
@@ -209,7 +295,9 @@ const ManageChapter = ({ course, param }) => {
                         <div className="d-flex align-items-center gap-2">
                           <div className="fw-medium">{lesson.title}</div>
                           {lesson.is_free_preview === "yes" && (
-                            <span className="badge bg-success pe-2">Preview</span>
+                            <span className="badge bg-success pe-2">
+                              Preview
+                            </span>
                           )}
                         </div>
                         <div className="d-flex align-items-center gap-2">
@@ -232,6 +320,7 @@ const ManageChapter = ({ course, param }) => {
                             type="button"
                             className="btn btn-light btn-sm text-danger"
                             aria-label="Delete lesson"
+                            onClick={() => deleteLesson(lesson.id)}
                           >
                             <FiTrash2 />
                           </button>
@@ -247,7 +336,9 @@ const ManageChapter = ({ course, param }) => {
                     type="button"
                     className="btn btn-primary"
                     onClick={() => openEditModal(chapter)}
-                    disabled={savingId === chapter.id || deletingId === chapter.id}
+                    disabled={
+                      savingId === chapter.id || deletingId === chapter.id
+                    }
                   >
                     Update
                   </button>
@@ -266,7 +357,11 @@ const ManageChapter = ({ course, param }) => {
           <br />
         </Accordion>
       </div>
-      <Modal show={showEditModal} onHide={() => setShowEditModal(false)} centered>
+      <Modal
+        show={showEditModal}
+        onHide={() => setShowEditModal(false)}
+        centered
+      >
         <Modal.Header closeButton>
           <Modal.Title>Update Chapter</Modal.Title>
         </Modal.Header>
@@ -303,10 +398,26 @@ const ManageChapter = ({ course, param }) => {
           </button>
         </Modal.Footer>
       </Modal>
+
       <CreateLesson
         show={showCreateLessonModal}
         onHide={() => setShowCreateLessonModal(false)}
         chapters={chapters}
+        setChapters={setChapters}
+      />
+
+      <LessonSort
+        show={showLessonSortModal}
+        onHide={() => setShowLessonSortModal(false)}
+        lessondata={lessondata}
+        onLessonsUpdate={handleLessonReorder}
+      />
+
+      <SortChapter
+        show={showChapterSortModal}
+        onHide={() => setShowChapterSortModal(false)}
+        chapters={chapters}
+        onChaptersUpdate={handleChapterReorder}
       />
     </div>
   );

@@ -71,6 +71,7 @@ class ChapterController extends Controller
         }
 
         $chapter->save();
+        $chapter->load('lessons');
 
         return response()->json([
             'status' => 200,
