@@ -4,8 +4,10 @@ namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
 use App\Models\category;
+use App\Models\Chapter;
 use App\Models\Course;
 use App\Models\Language;
+use App\Models\Lesson;
 use App\Models\Level;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\File as FacadesFile;
@@ -225,6 +227,48 @@ class CourseController extends Controller
             'status' => 200,
             'message' => $message,
             'data' => $course
+        ]);
+    }
+
+    public function destroy($id)
+    {
+        $course = Course::where('id', $id)
+            ->where('user_id', request()->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Course not found'
+            ], 404);
+        }
+
+        // Delete course image and thumbnail
+        if ($course->image) {
+            FacadesFile::delete(public_path($course->image));
+            $thumbnailPath = public_path('uploads/courses/thumbnails/' . basename($course->image));
+            if (FacadesFile::exists($thumbnailPath)) {
+                FacadesFile::delete($thumbnailPath);
+            }
+        }
+
+        $chapters = Chapter::where('course_id', $course->id)->get();
+        foreach ($chapters as $chapter) {
+            $lessons = Lesson::where('chapter_id', $chapter->id)->get();
+            foreach ($lessons as $lesson) {
+                if ($lesson->video) {
+                    FacadesFile::delete(public_path($lesson->video));
+                }
+                $lesson->delete();
+            }
+            $chapter->delete();
+        }
+
+        $course->delete();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Course deleted successfully'
         ]);
     }
 }

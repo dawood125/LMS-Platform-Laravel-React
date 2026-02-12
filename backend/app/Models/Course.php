@@ -22,4 +22,29 @@ class Course extends Model
     {
         return $this->hasMany(Chapter::class)->orderBy('sort_order');
     }
+
+    public function outcomes()
+    {
+        return $this->hasMany(Outcome::class);
+    }
+
+    public function requirements()
+    {
+        return $this->hasMany(Requirement::class);
+    }
+
+    public function level()
+    {
+        return $this->belongsTo(Level::class);
+    }
+
+    public function category()
+    {
+        return $this->belongsTo(category::class);
+    }
+
+    public function language()
+    {
+        return $this->belongsTo(Language::class);
+    }
 }

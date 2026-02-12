@@ -1,7 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
 import Course from "./Course";
+import { apiUrl } from "./Config";
 
 const FeaturedCourses = () => {
+  const [courses, setCourses] = useState([]);
+  const fetchCourses = async () => {
+    try {
+      const response = await fetch(apiUrl + "/featured-courses", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200) {
+        const result = await response.json();
+        setCourses(result.data);
+      } else {
+        console.error("Failed to fetch featured courses");
+      }
+    } catch (error) {
+      console.error("Error fetching featured courses:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCourses();
+  }, []);
   return (
     <section className="section-3 my-5">
       <div className="container">
@@ -13,55 +37,14 @@ const FeaturedCourses = () => {
           </p>
         </div>
         <div className="row gy-4">
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />
-          <Course
-            title="The complete 2025 Web Development Bootcamp"
-            level="Advance"
-            enrolled="10"
-            customClasses="col-lg-3 col-md-6"
-          />{" "}
-          s
+          {courses &&
+            courses.map((course) => (
+              <Course
+                key={course.id}
+                course={course}
+                customClasses="col-lg-3 col-md-6"
+              />
+            ))}
         </div>
       </div>
     </section>

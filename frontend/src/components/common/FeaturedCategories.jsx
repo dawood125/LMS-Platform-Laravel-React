@@ -1,6 +1,31 @@
-import React from "react";
+import React, { useState } from "react";
+import { apiUrl } from "./Config";
 
 const FeaturedCategories = () => {
+  const [categories, setCategories] = useState([]);
+  const fetchCategories = async () => {
+    try {
+      const response = await fetch(apiUrl + "/categories", {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      if (response.status === 200) {
+        const result = await response.json();
+        setCategories(result.data);
+      } else {
+        console.error("Failed to fetch categories");
+      }
+    } catch (error) {
+      console.error("Error fetching categories:", error);
+    }
+  };
+
+  React.useEffect(() => {
+    fetchCategories();
+  }, []);
+
   return (
     <section className="section-2">
       <div className="container">
@@ -12,62 +37,19 @@ const FeaturedCategories = () => {
           </p>
         </div>
         <div className="row gy-3">
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Web Development</a>
+          {categories.length > 0 ? (
+            categories.map((category) => (
+              <div key={category.id} className="col-6 col-md-6 col-lg-3">
+                <div className="card shadow border-0">
+                  <div className="card-body">
+                    <a href="#">{category.name}</a>
+                  </div>
+                </div>
               </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Mobile Development</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Digital Marketing</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Graphic Design</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Software Design</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Content Writing</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Fiance</a>
-              </div>
-            </div>
-          </div>
-          <div className="col-6 col-md-6 col-lg-3">
-            <div className="card shadow border-0">
-              <div className="card-body">
-                <a href="">Graphic Design</a>
-              </div>
-            </div>
-          </div>
+            ))
+          ) : (
+            <p>Loading categories...</p>
+          )}
         </div>
       </div>
     </section>

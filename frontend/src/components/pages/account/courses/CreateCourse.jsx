@@ -30,7 +30,7 @@ const CreateCourse = () => {
       .then((response) => response.json())
       .then((result) => {
         if (result.status == 200) {
-            navigate("/account/courses/edit/"+result.data.id);
+            navigate("/account/my-courses/edit/"+result.data.id);
         } else {
           toast.error(result.message);
         }
