@@ -4,6 +4,7 @@ namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chapter;
+use App\Models\Course;
 use App\Models\Lesson;
 use Illuminate\Http\Request;
 use Intervention\Image\ImageManager;
@@ -136,7 +137,7 @@ class LessonController extends Controller
 
         $lesson->delete();
 
-        $chapter=Chapter::where('id',$chapterId)->with('lessons')->first();
+        $chapter = Chapter::where('id', $chapterId)->with('lessons')->first();
 
         return response()->json([
             'status' => 200,
@@ -148,7 +149,7 @@ class LessonController extends Controller
     public function saveVideo(Request $request, $id)
     {
         $Validator = Validator::make($request->all(), [
-            'video' => 'required|file|mimes:mp4,avi,mov|max:512000' 
+            'video' => 'required|file|mimes:mp4,avi,mov|max:512000'
         ]);
 
         if ($Validator->fails()) {
@@ -159,7 +160,28 @@ class LessonController extends Controller
             ], 422);
         }
 
-        $lesson = Lesson::where('id', $id)->first();
+
+        $lesson = Lesson::find($id);
+
+        if (!$lesson) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Lesson not found'
+            ], 404);
+        }
+
+
+        $course = Course::whereHas('chapters', function ($query) use ($lesson) {
+            $query->where('id', $lesson->chapter_id);
+        })->where('user_id', $request->user()->id)->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
 
         if ($lesson && $lesson->video) {
             if (FacadesFile::exists(public_path($lesson->video))) {
@@ -167,12 +189,6 @@ class LessonController extends Controller
             }
         }
 
-        if (!$lesson) {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Lesson not found'
-            ], 404);
-        }
 
         $video = $request->file('video');
         $videoName = time() . '_' . $id . '.' . $video->getClientOriginalExtension();

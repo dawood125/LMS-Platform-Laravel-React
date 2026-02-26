@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
-use App\Models\category;
+use App\Models\Category;
 use App\Models\Chapter;
 use App\Models\Course;
 use App\Models\Language;
@@ -49,20 +49,26 @@ class CourseController extends Controller
             'data' => $course
         ]);
     }
-
-    public function show($id)
+    public function show($id, Request $request)
     {
-        $course = Course::with('chapters', 'chapters.lessons')->find($id);
+        $course = Course::with('chapters.lessons')->find($id);
 
         if (!$course) {
             return response()->json([
-                'status' => 404,
+                'status' => false,
                 'message' => 'Course not found'
             ], 404);
         }
 
+        if ($course->user_id !== $request->user()->id) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         return response()->json([
-            'status' => 200,
+            'status' => true,
             'data' => $course
         ]);
     }
@@ -134,7 +140,7 @@ class CourseController extends Controller
     public function metaData()
     {
 
-        $categories = category::where('status', 1)->get();
+        $categories = Category::where('status', 1)->get();
         $levels = Level::where('status', 1)->get();
         $languages = Language::where('status', 1)->get();
 

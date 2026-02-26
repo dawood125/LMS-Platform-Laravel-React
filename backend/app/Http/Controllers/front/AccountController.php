@@ -145,7 +145,7 @@ class AccountController extends Controller
             }
         ])->where('id', $id)->first();
 
-        $activeLesson=collect();
+        $activeLesson = collect();
 
         $activityCount = Activity::where(['user_id' => $request->user()->id, 'course_id' => $id])->count();
         if ($activityCount == 0) {
@@ -168,8 +168,11 @@ class AccountController extends Controller
             }
 
             $activeLesson = $lesson;
-        }else{
-            $activity = Activity::where(['user_id' => $request->user()->id, 'course_id' => $id])->with('lesson')->first();
+        } else {
+            $activity = Activity::where('user_id', $request->user()->id)
+                ->where('course_id', $course->id)
+                ->where('is_last_watched', 'yes')  
+                ->first();
 
             $activeLesson = $activity->lesson;
         }

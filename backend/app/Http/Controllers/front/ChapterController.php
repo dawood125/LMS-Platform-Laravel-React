@@ -82,20 +82,27 @@ class ChapterController extends Controller
 
     public function destroy($id)
     {
-        $chapter = Chapter::find($id);
+        $chapter = Chapter::with('lessons')->find($id);
 
         if (!$chapter) {
             return response()->json([
-                'status' => 404,
+                'status' => false,
                 'message' => 'Chapter not found'
             ], 404);
+        }
+
+        foreach ($chapter->lessons as $lesson) {
+            if ($lesson->video && file_exists(public_path('uploads/courses/video/' . $lesson->video))) {
+                unlink(public_path('uploads/courses/video/' . $lesson->video));
+            }
+            $lesson->delete();
         }
 
         $chapter->delete();
 
         return response()->json([
-            'status' => 200,
-            'message' => 'Chapter deleted successfully'
+            'status' => true,
+            'message' => 'Chapter and its lessons deleted successfully'
         ]);
     }
 }

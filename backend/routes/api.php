@@ -29,6 +29,9 @@ Route::get('/user', function (Request $request) {
 
 
 Route::group(['middleware' => ['auth:sanctum']], function () {
+
+    Route::post('/logout', [AccountController::class, 'logout']);
+
     Route::post('/courses', [CourseController::class, 'store']);
     Route::get('/courses/metadata', [CourseController::class, 'metaData']);
     Route::get('/courses/{id}', [CourseController::class, 'show']);
@@ -63,6 +66,4 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/enrollments', [AccountController::class, 'enrollements']);
     Route::get('/course-access/{id}', [AccountController::class, 'courses']);
     Route::post('/enroll-course', [HomeController::class, 'enrollCourse']);
-
-    
 });

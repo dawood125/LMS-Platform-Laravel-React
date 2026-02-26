@@ -3,7 +3,7 @@
 namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
-use App\Models\category;
+use App\Models\Category;
 use App\Models\Course;
 use App\Models\Enrollment;
 use App\Models\Language;
@@ -14,7 +14,7 @@ class HomeController extends Controller
 {
     public function getCategories()
     {
-        $categories = category::where('status', 1)->orderBy('name')->get();
+        $categories = Category::where('status', 1)->orderBy('name')->get();
         return response()->json([
             'status' => 200,
             'data' => $categories
@@ -83,7 +83,7 @@ class HomeController extends Controller
         $sort = strtolower((string) $request->query('sort', 'desc'));
         $courses = $courses->orderBy('created_at', in_array($sort, ['asc', 'desc'], true) ? $sort : 'desc');
 
-        $courses = $courses->get();
+        $courses = $courses->paginate(12);
         return response()->json([
             'status' => 200,
             'data' => $courses

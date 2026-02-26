@@ -9,10 +9,10 @@ class Activity extends Model
     protected $fillable = [
         'user_id',
         'course_id',
-        'chapter_id',
         'lesson_id',
-        'is_completed',
+        'chapter_id',
         'is_last_watched',
+        'watch_time'
     ];
 
     public function lesson()
