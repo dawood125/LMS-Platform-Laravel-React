@@ -13,7 +13,7 @@ const Footer = () => {
                             <div className="w-9 h-9 bg-indigo-600 rounded-lg flex items-center justify-center">
                                 <FiBookOpen className="text-white text-lg" />
                             </div>
-                            <span className="text-xl font-bold text-white">
+                            <span className="text-xl font-display font-bold text-white">
                                 Learn<span className="text-indigo-400">Hub</span>
                             </span>
                         </Link>

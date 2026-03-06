@@ -1,0 +1,418 @@
+<?php
+
+namespace Database\Seeders;
+
+use App\Models\Course;
+use App\Models\Outcome;
+use App\Models\Requirement;
+use Illuminate\Database\Seeder;
+
+class CourseSeeder extends Seeder
+{
+    public function run(): void
+    {
+        $courses = [
+            [
+                'title' => 'Complete React Masterclass 2025',
+                'description' => 'Master React from scratch. Learn hooks, context, Redux, and build 5 real-world projects. This comprehensive course covers everything from the fundamentals to advanced patterns used in production applications. You will learn component architecture, state management, API integration, and deployment strategies.',
+                'user_id' => 1,
+                'category_id' => 1,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 49.99,
+                'cross_price' => 99.99,
+                'image' => 'https://images.unsplash.com/photo-1633356122544-f134324a6cee?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Build modern React applications from scratch',
+                    'Master React Hooks (useState, useEffect, useContext, useReducer)',
+                    'State management with Redux Toolkit',
+                    'Build and consume RESTful APIs',
+                    'Deploy React apps to production',
+                ],
+                'requirements' => [
+                    'Basic HTML, CSS, and JavaScript knowledge',
+                    'A computer with internet access',
+                    'No prior React experience needed',
+                ],
+            ],
+            [
+                'title' => 'Laravel API Development Bootcamp',
+                'description' => 'Build powerful RESTful APIs with Laravel. Learn authentication, authorization, testing, and best practices for scalable backend development. This course covers Sanctum authentication, resource controllers, middleware, database optimization, and API documentation.',
+                'user_id' => 1,
+                'category_id' => 1,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 59.99,
+                'cross_price' => 119.99,
+                'image' => 'https://images.unsplash.com/photo-1619410283995-43d9134e7656?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Build RESTful APIs with Laravel',
+                    'Implement authentication with Sanctum',
+                    'Write clean, testable code',
+                    'Database design and optimization',
+                    'API documentation with Swagger',
+                ],
+                'requirements' => [
+                    'Basic PHP knowledge',
+                    'Understanding of MVC pattern',
+                    'Familiarity with databases',
+                ],
+            ],
+            [
+                'title' => 'Python for Data Science & AI',
+                'description' => 'Learn Python programming for data science and artificial intelligence. Cover NumPy, Pandas, Matplotlib, Scikit-learn, and TensorFlow. Build real data science projects including data visualization dashboards, predictive models, and machine learning pipelines.',
+                'user_id' => 2,
+                'category_id' => 3,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 79.99,
+                'cross_price' => 149.99,
+                'image' => 'https://images.unsplash.com/photo-1526379095098-d400fd0bf935?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Master Python fundamentals for data science',
+                    'Data analysis with Pandas and NumPy',
+                    'Create stunning visualizations with Matplotlib',
+                    'Build machine learning models with Scikit-learn',
+                    'Introduction to deep learning with TensorFlow',
+                ],
+                'requirements' => [
+                    'No programming experience required',
+                    'Basic math knowledge',
+                    'Willingness to learn',
+                ],
+            ],
+            [
+                'title' => 'Flutter Mobile App Development',
+                'description' => 'Build beautiful cross-platform mobile apps with Flutter and Dart. Learn widgets, state management, Firebase integration, and publish to both App Store and Google Play. Create 4 complete apps throughout the course.',
+                'user_id' => 2,
+                'category_id' => 2,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 54.99,
+                'cross_price' => 109.99,
+                'image' => 'https://images.unsplash.com/photo-1551650975-87deedd944c3?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Build cross-platform mobile apps with Flutter',
+                    'Master Dart programming language',
+                    'State management with Provider and Riverpod',
+                    'Firebase authentication and Firestore',
+                    'Publish apps to App Store and Play Store',
+                ],
+                'requirements' => [
+                    'Basic programming knowledge in any language',
+                    'A computer (Mac for iOS development)',
+                    'Android Studio or VS Code installed',
+                ],
+            ],
+            [
+                'title' => 'UI/UX Design with Figma',
+                'description' => 'Master modern UI/UX design principles using Figma. Learn wireframing, prototyping, design systems, and user research. Create a complete design portfolio with 3 professional projects that will help you land your first design job.',
+                'user_id' => 3,
+                'category_id' => 5,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 39.99,
+                'cross_price' => 89.99,
+                'image' => 'https://images.unsplash.com/photo-1561070791-2526d30994b5?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Master Figma from beginner to advanced',
+                    'Create wireframes and high-fidelity mockups',
+                    'Build interactive prototypes',
+                    'Design responsive layouts for web and mobile',
+                    'Build a professional design portfolio',
+                ],
+                'requirements' => [
+                    'No design experience needed',
+                    'Figma account (free)',
+                    'Creative mindset',
+                ],
+            ],
+            [
+                'title' => 'AWS Cloud Practitioner Certification',
+                'description' => 'Prepare for the AWS Cloud Practitioner certification exam. Learn cloud computing concepts, AWS services, security, pricing, and architecture. Includes practice exams and hands-on labs to ensure you pass on your first attempt.',
+                'user_id' => 3,
+                'category_id' => 6,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 44.99,
+                'cross_price' => 94.99,
+                'image' => 'https://images.unsplash.com/photo-1451187580459-43490279c0fa?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Understand cloud computing fundamentals',
+                    'Master core AWS services (EC2, S3, RDS, Lambda)',
+                    'AWS security and compliance',
+                    'Cloud architecture best practices',
+                    'Pass the AWS Cloud Practitioner exam',
+                ],
+                'requirements' => [
+                    'No prior cloud experience needed',
+                    'Basic IT knowledge helpful',
+                    'AWS free tier account',
+                ],
+            ],
+            [
+                'title' => 'Ethical Hacking & Penetration Testing',
+                'description' => 'Learn ethical hacking from scratch. Master network scanning, vulnerability assessment, web application security, and social engineering. Use industry-standard tools like Kali Linux, Metasploit, Burp Suite, and Wireshark.',
+                'user_id' => 4,
+                'category_id' => 7,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 69.99,
+                'cross_price' => 139.99,
+                'image' => 'https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Perform professional penetration testing',
+                    'Master Kali Linux and security tools',
+                    'Web application vulnerability assessment',
+                    'Network security and scanning techniques',
+                    'Write professional security reports',
+                ],
+                'requirements' => [
+                    'Basic networking knowledge',
+                    'Familiarity with Linux command line',
+                    'A computer with 8GB+ RAM for virtual machines',
+                ],
+            ],
+            [
+                'title' => 'Docker & Kubernetes for DevOps',
+                'description' => 'Master containerization with Docker and orchestration with Kubernetes. Learn CI/CD pipelines, microservices architecture, and cloud deployment. Build production-ready infrastructure from development to deployment.',
+                'user_id' => 4,
+                'category_id' => 8,
+                'level_id' => 3,
+                'language_id' => 1,
+                'price' => 64.99,
+                'cross_price' => 129.99,
+                'image' => 'https://images.unsplash.com/photo-1667372393119-3d4c48d07fc9?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Master Docker containerization',
+                    'Kubernetes orchestration and management',
+                    'Build CI/CD pipelines with GitHub Actions',
+                    'Microservices architecture patterns',
+                    'Deploy to AWS EKS and Google GKE',
+                ],
+                'requirements' => [
+                    'Linux command line basics',
+                    'Basic understanding of web applications',
+                    'Docker Desktop installed',
+                ],
+            ],
+            [
+                'title' => 'Blockchain Development with Solidity',
+                'description' => 'Learn blockchain development from scratch. Build decentralized applications (DApps) with Solidity, Ethereum, and Web3.js. Create smart contracts, NFT marketplaces, and DeFi applications with real-world projects.',
+                'user_id' => 5,
+                'category_id' => 9,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 74.99,
+                'cross_price' => 149.99,
+                'image' => 'https://images.unsplash.com/photo-1639762681485-074b7f938ba0?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Understand blockchain technology fundamentals',
+                    'Write smart contracts with Solidity',
+                    'Build DApps with Web3.js and Ethers.js',
+                    'Create NFT marketplace from scratch',
+                    'DeFi protocols and tokenomics',
+                ],
+                'requirements' => [
+                    'JavaScript programming knowledge',
+                    'Basic understanding of web development',
+                    'MetaMask wallet installed',
+                ],
+            ],
+            [
+                'title' => 'Digital Marketing Masterclass',
+                'description' => 'Complete digital marketing course covering SEO, Google Ads, Facebook Ads, email marketing, content marketing, and analytics. Learn strategies used by top marketing agencies to drive traffic and conversions.',
+                'user_id' => 5,
+                'category_id' => 10,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 34.99,
+                'cross_price' => 79.99,
+                'image' => 'https://images.unsplash.com/photo-1460925895917-afdab827c52f?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'yes',
+                'outcomes' => [
+                    'Master SEO and rank on Google',
+                    'Run profitable Google and Facebook Ads',
+                    'Email marketing automation',
+                    'Content marketing strategy',
+                    'Analytics and conversion optimization',
+                ],
+                'requirements' => [
+                    'No marketing experience needed',
+                    'A computer with internet access',
+                    'Willingness to practice',
+                ],
+            ],
+            [
+                'title' => 'Advanced JavaScript & TypeScript',
+                'description' => 'Deep dive into advanced JavaScript concepts and TypeScript. Learn closures, prototypes, async patterns, generics, decorators, and design patterns. Write clean, type-safe, production-quality code.',
+                'user_id' => 1,
+                'category_id' => 1,
+                'level_id' => 3,
+                'language_id' => 1,
+                'price' => 54.99,
+                'cross_price' => 109.99,
+                'image' => 'https://images.unsplash.com/photo-1627398242454-45a1465c2479?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'no',
+                'outcomes' => [
+                    'Master advanced JavaScript concepts',
+                    'TypeScript fundamentals to advanced',
+                    'Design patterns in JavaScript',
+                    'Async programming mastery',
+                    'Write production-quality code',
+                ],
+                'requirements' => [
+                    'Solid JavaScript fundamentals',
+                    'Experience building web applications',
+                    'VS Code installed',
+                ],
+            ],
+            [
+                'title' => 'Node.js & Express Backend Development',
+                'description' => 'Build scalable backend applications with Node.js and Express. Learn REST APIs, GraphQL, MongoDB, PostgreSQL, authentication, file uploads, real-time communication with Socket.io, and testing.',
+                'user_id' => 2,
+                'category_id' => 1,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 59.99,
+                'cross_price' => 119.99,
+                'image' => 'https://images.unsplash.com/photo-1555099962-4199c345e5dd?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'no',
+                'outcomes' => [
+                    'Build REST APIs with Express.js',
+                    'GraphQL API development',
+                    'MongoDB and PostgreSQL databases',
+                    'JWT authentication and authorization',
+                    'Real-time apps with Socket.io',
+                ],
+                'requirements' => [
+                    'JavaScript fundamentals',
+                    'Basic understanding of HTTP',
+                    'Node.js installed',
+                ],
+            ],
+            [
+                'title' => 'Machine Learning with Python',
+                'description' => 'Comprehensive machine learning course. Learn supervised and unsupervised learning, neural networks, natural language processing, and computer vision. Build 10 real ML projects with Python, Scikit-learn, and TensorFlow.',
+                'user_id' => 3,
+                'category_id' => 4,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 84.99,
+                'cross_price' => 169.99,
+                'image' => 'https://images.unsplash.com/photo-1677442136019-21780ecad995?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'no',
+                'outcomes' => [
+                    'Understand ML algorithms and mathematics',
+                    'Supervised learning (regression, classification)',
+                    'Unsupervised learning (clustering, PCA)',
+                    'Neural networks and deep learning',
+                    'Build and deploy ML models',
+                ],
+                'requirements' => [
+                    'Python programming basics',
+                    'Basic statistics and linear algebra',
+                    'Jupyter Notebook installed',
+                ],
+            ],
+            [
+                'title' => 'React Native Mobile Development',
+                'description' => 'Build native mobile apps with React Native. Learn navigation, state management, native modules, animations, and app deployment. Create 3 complete apps including a social media app and e-commerce app.',
+                'user_id' => 4,
+                'category_id' => 2,
+                'level_id' => 2,
+                'language_id' => 1,
+                'price' => 49.99,
+                'cross_price' => 99.99,
+                'image' => 'https://images.unsplash.com/photo-1512941937669-90a1b58e7e9c?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'no',
+                'outcomes' => [
+                    'Build cross-platform apps with React Native',
+                    'Navigation with React Navigation',
+                    'State management with Redux',
+                    'Native module integration',
+                    'App Store and Play Store deployment',
+                ],
+                'requirements' => [
+                    'React.js experience required',
+                    'JavaScript ES6+ knowledge',
+                    'Mac for iOS development (optional)',
+                ],
+            ],
+            [
+                'title' => 'Full Stack Web Development Bootcamp',
+                'description' => 'Complete full stack development course. Master HTML, CSS, JavaScript, React, Node.js, Express, MongoDB, and deployment. Build 8 projects from simple websites to complex full-stack applications.',
+                'user_id' => 1,
+                'category_id' => 1,
+                'level_id' => 1,
+                'language_id' => 1,
+                'price' => 89.99,
+                'cross_price' => 199.99,
+                'image' => 'https://images.unsplash.com/photo-1498050108023-c5249f4df085?w=750&h=450&fit=crop',
+                'status' => 1,
+                'is_featured' => 'no',
+                'outcomes' => [
+                    'Master HTML5, CSS3, and modern JavaScript',
+                    'Frontend development with React',
+                    'Backend development with Node.js and Express',
+                    'Database design with MongoDB',
+                    'Full stack project deployment',
+                ],
+                'requirements' => [
+                    'No prior programming experience needed',
+                    'A computer with internet access',
+                    'Dedication to learn and practice',
+                ],
+            ],
+        ];
+
+        foreach ($courses as $courseData) {
+            $outcomes = $courseData['outcomes'];
+            $requirements = $courseData['requirements'];
+            unset($courseData['outcomes'], $courseData['requirements']);
+
+            $course = Course::create($courseData);
+
+            // Create outcomes
+            foreach ($outcomes as $index => $outcomeText) {
+                Outcome::create([
+                    'course_id' => $course->id,
+                    'text' => $outcomeText,
+                    'sort_order' => ($index + 1) * 100,
+                ]);
+            }
+
+            // Create requirements
+            foreach ($requirements as $index => $requirementText) {
+                Requirement::create([
+                    'course_id' => $course->id,
+                    'text' => $requirementText,
+                    'sort_order' => ($index + 1) * 100,
+                ]);
+            }
+        }
+    }
+}
