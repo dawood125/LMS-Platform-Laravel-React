@@ -11,8 +11,8 @@ class Activity extends Model
         'course_id',
         'lesson_id',
         'chapter_id',
-        'is_last_watched',
-        'watch_time'
+        'is_completed',
+        'is_last_watched'
     ];
 
     public function lesson()

@@ -14,9 +14,28 @@ use Illuminate\Support\Facades\Validator;
 
 class LessonController extends Controller
 {
-    public function index()
+    /**
+     * Verify the chapter belongs to a course owned by the current user.
+     * Returns the Course if authorized, null if not.
+     */
+    private function verifyChapterOwnership($chapterId, Request $request)
     {
-        $lessons = Lesson::where('chapter_id', request()->chapter_id)
+        return Course::whereHas('chapters', function ($query) use ($chapterId) {
+            $query->where('id', $chapterId);
+        })->where('user_id', $request->user()->id)->first();
+    }
+
+    public function index(Request $request)
+    {
+        // Verify ownership: chapter → course → user
+        if (!$this->verifyChapterOwnership($request->chapter_id, $request)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
+        $lessons = Lesson::where('chapter_id', $request->chapter_id)
             ->orderBy('sort_order')
             ->get();
 
@@ -35,6 +54,14 @@ class LessonController extends Controller
             'status' => 'nullable|integer'
         ]);
 
+        // Verify ownership: chapter → course → user
+        if (!$this->verifyChapterOwnership($request->chapter_id, $request)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $lesson = new Lesson();
         $lesson->chapter_id = $request->chapter_id;
         $lesson->title = $request->title;
@@ -49,7 +76,7 @@ class LessonController extends Controller
         ]);
     }
 
-    public function show($id)
+    public function show(Request $request, $id)
     {
         $lesson = Lesson::find($id);
 
@@ -58,6 +85,14 @@ class LessonController extends Controller
                 'status' => 404,
                 'message' => 'Lesson not found'
             ], 404);
+        }
+
+        // Verify ownership: lesson → chapter → course → user
+        if (!$this->verifyChapterOwnership($lesson->chapter_id, $request)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         return response()->json([
@@ -85,6 +120,14 @@ class LessonController extends Controller
                 'status' => 404,
                 'message' => 'Lesson not found'
             ], 404);
+        }
+
+        // Verify ownership: lesson → chapter → course → user
+        if (!$this->verifyChapterOwnership($lesson->chapter_id, $request)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         $lesson->title = $request->title;
@@ -122,7 +165,7 @@ class LessonController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $lesson = Lesson::find($id);
 
@@ -131,6 +174,14 @@ class LessonController extends Controller
                 'status' => 404,
                 'message' => 'Lesson not found'
             ], 404);
+        }
+
+        // Verify ownership: lesson → chapter → course → user
+        if (!$this->verifyChapterOwnership($lesson->chapter_id, $request)) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         $chapterId = $lesson->chapter_id;

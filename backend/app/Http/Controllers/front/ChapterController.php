@@ -4,12 +4,25 @@ namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
 use App\Models\Chapter;
+use App\Models\Course;
 use Illuminate\Http\Request;
 
 class ChapterController extends Controller
 {
     public function index(Request $request)
     {
+        // Verify the course belongs to this user
+        $course = Course::where('id', $request->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $chapters = Chapter::where('course_id', $request->course_id)
             ->orderBy('sort_order')
             ->get();
@@ -28,6 +41,18 @@ class ChapterController extends Controller
             'sort_order' => 'nullable|integer',
             'status' => 'nullable|integer'
         ]);
+
+        // Verify the course belongs to this user
+        $course = Course::where('id', $request->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
 
         $chapter = new Chapter();
         $chapter->course_id = $request->course_id;
@@ -60,6 +85,18 @@ class ChapterController extends Controller
             ], 404);
         }
 
+        // Verify ownership: chapter → course → user
+        $course = Course::where('id', $chapter->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $chapter->title = $request->title;
 
         if ($request->has('sort_order')) {
@@ -80,7 +117,7 @@ class ChapterController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $chapter = Chapter::with('lessons')->find($id);
 
@@ -89,6 +126,18 @@ class ChapterController extends Controller
                 'status' => false,
                 'message' => 'Chapter not found'
             ], 404);
+        }
+
+        // Verify ownership: chapter → course → user
+        $course = Course::where('id', $chapter->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         foreach ($chapter->lessons as $lesson) {

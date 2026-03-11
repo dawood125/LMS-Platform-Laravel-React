@@ -6,6 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Course extends Model
 {
+    protected $fillable = [
+        'title', 'user_id', 'category_id', 'language_id', 'level_id',
+        'description', 'price', 'cross_price', 'status', 'is_featured', 'image'
+    ];
+
     protected $appends = ['course_small_image'];
     public function getCourseSmallImageAttribute()
     {
@@ -40,11 +45,16 @@ class Course extends Model
 
     public function category()
     {
-        return $this->belongsTo(category::class);
+        return $this->belongsTo(Category::class);
     }
 
     public function language()
     {
         return $this->belongsTo(Language::class);
+    }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
     }
 }

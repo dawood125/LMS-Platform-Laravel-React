@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\front;
 
 use App\Http\Controllers\Controller;
+use App\Models\Course;
 use App\Models\Requirement;
 use Illuminate\Http\Request;
 
@@ -10,6 +11,18 @@ class RequirementController extends Controller
 {
     public function index(Request $request)
     {
+        // Verify the course belongs to this user
+        $course = Course::where('id', $request->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $requirements = Requirement::where('course_id', $request->course_id)->get();
 
         return response()->json([
@@ -24,6 +37,18 @@ class RequirementController extends Controller
             'course_id' => 'required|exists:courses,id',
             'requirement' => 'required|string|max:255'
         ]);
+
+        // Verify the course belongs to this user
+        $course = Course::where('id', $request->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
 
         $requirement = new Requirement();
         $requirement->course_id = $request->course_id;
@@ -54,6 +79,18 @@ class RequirementController extends Controller
             ], 404);
         }
 
+        // Verify ownership: requirement → course → user
+        $course = Course::where('id', $requirement->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
+        }
+
         $requirement->text = $request->requirement;
 
         if ($request->has('sort_order')) {
@@ -69,7 +106,7 @@ class RequirementController extends Controller
         ]);
     }
 
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $requirement = Requirement::find($id);
 
@@ -78,6 +115,18 @@ class RequirementController extends Controller
                 'status' => 404,
                 'message' => 'Requirement not found'
             ], 404);
+        }
+
+        // Verify ownership: requirement → course → user
+        $course = Course::where('id', $requirement->course_id)
+            ->where('user_id', $request->user()->id)
+            ->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'Unauthorized'
+            ], 403);
         }
 
         $requirement->delete();
