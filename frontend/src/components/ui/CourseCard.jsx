@@ -4,11 +4,12 @@ import { FiClock, FiBookOpen, FiStar, FiUser } from 'react-icons/fi';
 
 const CourseCard = ({ course, index = 0 }) => {
 
-    const imageUrl = course.image
-        ? (course.image.startsWith('http')
-            ? course.image
-            : `http://localhost:8000/uploads/courses/thumbnail/${course.image}`)
-        : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=750&h=450&fit=crop';
+    const imageUrl = course.course_small_image
+        || (course.image
+            ? (course.image.startsWith('http')
+                ? course.image
+                : `http://localhost:8000/${course.image}`)
+            : 'https://images.unsplash.com/photo-1516321318423-f06f85e504b3?w=750&h=450&fit=crop');
 
     return (
         <motion.div
@@ -29,7 +30,7 @@ const CourseCard = ({ course, index = 0 }) => {
                         />
 
                         {/* Overlay on hover */}
-                        <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
+                        <div className="absolute inset-0 bg-linear-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500" />
 
                         {/* Level Badge */}
                         {course.level && (

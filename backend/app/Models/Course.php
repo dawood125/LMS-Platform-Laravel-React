@@ -18,9 +18,21 @@ class Course extends Model
             return null;
         }
 
-        $filename = basename($this->image);
+        // Seeded/demo data may store full external URLs; use them as-is.
+        if (filter_var($this->image, FILTER_VALIDATE_URL)) {
+            return $this->image;
+        }
 
-        return asset('uploads/courses/thumbnails/' . $filename);
+        $path = parse_url($this->image, PHP_URL_PATH) ?: $this->image;
+        $filename = basename($path);
+        $thumbnailPath = 'uploads/courses/thumbnails/' . $filename;
+
+        if (file_exists(public_path($thumbnailPath))) {
+            return asset($thumbnailPath);
+        }
+
+        // Fallback to original image path if thumbnail is missing.
+        return asset($this->image);
     }
 
     public function chapters()
