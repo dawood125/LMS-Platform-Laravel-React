@@ -130,18 +130,18 @@ class AccountController extends Controller
             'category',
             'language',
             'chapters' => function ($query) {
+                $query->where('status', 1);
+                $query->orderBy('sort_order');
                 $query->withCount(['lessons' => function ($query) {
                     $query->where('status', 1);
-                    $query->whereNotNull('video');
                 }]);
                 $query->withSum(['lessons' => function ($query) {
                     $query->where('status', 1);
-                    $query->whereNotNull('video');
                 }], 'duration');
             },
             'chapters.lessons' => function ($query) {
                 $query->where('status', 1);
-                $query->whereNotNull('video');
+                $query->orderBy('sort_order');
             }
         ])->where('id', $id)->first();
 
@@ -171,7 +171,7 @@ class AccountController extends Controller
         } else {
             $activity = Activity::where('user_id', $request->user()->id)
                 ->where('course_id', $course->id)
-                ->where('is_last_watched', 'yes')  
+                ->where('is_last_watched', 'yes')
                 ->first();
 
             $activeLesson = $activity->lesson;

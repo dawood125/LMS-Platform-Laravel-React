@@ -99,20 +99,27 @@ class HomeController extends Controller
             'outcomes',
             'requirements',
             'chapters' => function ($query) {
+                $query->where('status', 1);
+                $query->orderBy('sort_order');
                 $query->withCount(['lessons' => function ($query) {
                     $query->where('status', 1);
-                    $query->whereNotNull('video');
                 }]);
                 $query->withSum(['lessons' => function ($query) {
                     $query->where('status', 1);
-                    $query->whereNotNull('video');
                 }], 'duration');
             },
             'chapters.lessons' => function ($query) {
                 $query->where('status', 1);
-                $query->whereNotNull('video');
+                $query->orderBy('sort_order');
             }
         ])->where('id', $id)->first();
+
+        if (!$course) {
+            return response()->json([
+                'status' => 404,
+                'message' => 'Course not found'
+            ], 404);
+        }
 
         $totalDuration = $course->chapters->sum(function ($chapter) {
             return $chapter->lessons_sum_duration ?? 0;
@@ -123,17 +130,10 @@ class HomeController extends Controller
         $course->total_duration = $totalDuration;
         $course->total_lessons = $totalLessons;
 
-        if ($course) {
-            return response()->json([
-                'status' => 200,
-                'data' => $course
-            ]);
-        } else {
-            return response()->json([
-                'status' => 404,
-                'message' => 'Course not found'
-            ], 404);
-        }
+        return response()->json([
+            'status' => 200,
+            'data' => $course
+        ]);
     }
 
 
