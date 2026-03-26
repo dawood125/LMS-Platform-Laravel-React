@@ -11,6 +11,7 @@ const courseService = {
   enrollCourse: (data) => apiClient.post("/enroll-course", data),
   getEnrollments: () => apiClient.get("/enrollments"),
   getCourseAccess: (id) => apiClient.get(`/course-access/${id}`),
+  updateActivity: (data) => apiClient.post('/update-activity', data),
 
   getMyCourses: () => apiClient.get("/my-courses"),
   getMetaData: () => apiClient.get("/courses/metadata"),

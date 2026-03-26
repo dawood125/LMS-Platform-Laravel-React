@@ -184,4 +184,70 @@ class AccountController extends Controller
             'active_lesson' => $activeLesson
         ]);
     }
+
+    public function updateActivity(Request $request)
+    {
+        $request->validate([
+            'course_id' => 'required|exists:courses,id',
+            'lesson_id' => 'required|exists:lessons,id',
+            'chapter_id' => 'required|exists:chapters,id',
+            'is_completed' => 'nullable|in:yes,no',
+        ]);
+
+        $userId = $request->user()->id;
+        $courseId = $request->course_id;
+        $lessonId = $request->lesson_id;
+        $chapterId = $request->chapter_id;
+
+        // Check enrollment
+        $enrolled = Enrollment::where(['user_id' => $userId, 'course_id' => $courseId])->exists();
+        if (!$enrolled) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'You are not enrolled in this course'
+            ], 403);
+        }
+
+        // Reset all is_last_watched to 'no' for this course
+        Activity::where(['user_id' => $userId, 'course_id' => $courseId])
+            ->update(['is_last_watched' => 'no']);
+
+        // Create or update activity for this lesson
+        $activity = Activity::updateOrCreate(
+            [
+                'user_id' => $userId,
+                'course_id' => $courseId,
+                'lesson_id' => $lessonId,
+            ],
+            [
+                'chapter_id' => $chapterId,
+                'is_last_watched' => 'yes',
+                'is_completed' => $request->is_completed ?? 'no',
+            ]
+        );
+
+        // Get completion stats
+        $totalLessons = Lesson::whereHas('chapter', function ($query) use ($courseId) {
+            $query->where('course_id', $courseId);
+        })->where('status', 1)->count();
+
+        $completedLessons = Activity::where([
+            'user_id' => $userId,
+            'course_id' => $courseId,
+            'is_completed' => 'yes',
+        ])->count();
+
+        $progress = $totalLessons > 0 ? round(($completedLessons / $totalLessons) * 100) : 0;
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Activity updated',
+            'data' => [
+                'activity' => $activity,
+                'progress' => $progress,
+                'completed_lessons' => $completedLessons,
+                'total_lessons' => $totalLessons,
+            ]
+        ]);
+    }
 }

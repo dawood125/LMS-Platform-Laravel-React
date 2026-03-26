@@ -66,4 +66,5 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/enrollments', [AccountController::class, 'enrollements']);
     Route::get('/course-access/{id}', [AccountController::class, 'courses']);
     Route::post('/enroll-course', [HomeController::class, 'enrollCourse']);
+    Route::post('/update-activity', [AccountController::class, 'updateActivity']);
 });
