@@ -3,7 +3,7 @@ import { useParams, Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import {
     FiArrowLeft, FiPlay, FiCheck, FiChevronDown, FiChevronUp,
-    FiBookOpen, FiClock, FiCheckCircle, FiLock, FiMenu, FiX
+    FiClock, FiCheckCircle, FiMenu, FiX
 } from 'react-icons/fi';
 import courseService from '../../services/courseService';
 import toast from 'react-hot-toast';
@@ -17,16 +17,18 @@ const WatchCourse = () => {
     const [loading, setLoading] = useState(true);
     const [completedLessons, setCompletedLessons] = useState([]);
     const [progress, setProgress] = useState(0);
+    const [totalLessons, setTotalLessons] = useState(0);
     const [expandedChapters, setExpandedChapters] = useState({});
     const [sidebarOpen, setSidebarOpen] = useState(false);
 
-    // Fetch course data
+    // Fetch course data AND activities on load
     useEffect(() => {
-        const fetchCourseAccess = async () => {
+        const fetchData = async () => {
             try {
-                const response = await courseService.getCourseAccess(id);
-                const courseData = response.data.data;
-                const activeLessonData = response.data.active_lesson;
+                // Fetch course access (gets course + active lesson)
+                const courseResponse = await courseService.getCourseAccess(id);
+                const courseData = courseResponse.data.data;
+                const activeLessonData = courseResponse.data.active_lesson;
 
                 setCourse(courseData);
                 setActiveLesson(activeLessonData);
@@ -41,8 +43,13 @@ const WatchCourse = () => {
                     }
                 }
 
-                // Fetch completed lessons
-                await fetchCompletedLessons(courseData);
+                // Fetch completed lessons / progress from backend
+                const activitiesResponse = await courseService.getCourseActivities(id);
+                const activitiesData = activitiesResponse.data.data;
+
+                setCompletedLessons(activitiesData.completed_lesson_ids || []);
+                setProgress(activitiesData.progress || 0);
+                setTotalLessons(activitiesData.total_lessons || 0);
 
             } catch (error) {
                 if (error.response?.status === 404) {
@@ -54,16 +61,8 @@ const WatchCourse = () => {
                 setLoading(false);
             }
         };
-        fetchCourseAccess();
+        fetchData();
     }, [id]);
-
-    const fetchCompletedLessons = async (courseData) => {
-        // We'll track completed lessons from activity data
-        // For now, initialize empty - will update when user marks complete
-        const allLessons = courseData.chapters?.flatMap(ch => ch.lessons || []) || [];
-        const totalLessons = allLessons.length;
-        setProgress(totalLessons > 0 ? Math.round((completedLessons.length / totalLessons) * 100) : 0);
-    };
 
     const handleLessonClick = async (lesson, chapter) => {
         if (!lesson) return;
@@ -74,7 +73,7 @@ const WatchCourse = () => {
         // Expand the chapter
         setExpandedChapters(prev => ({ ...prev, [chapter.id]: true }));
 
-        // Update activity on backend
+        // Update activity on backend (track last watched)
         try {
             const response = await courseService.updateActivity({
                 course_id: parseInt(id),
@@ -84,11 +83,6 @@ const WatchCourse = () => {
 
             if (response.data.data) {
                 setProgress(response.data.data.progress || 0);
-                setCompletedLessons(prev => {
-                    // Don't add duplicates
-                    if (!prev.includes(lesson.id)) return prev;
-                    return prev;
-                });
             }
         } catch (error) {
             console.error('Failed to update activity:', error);
@@ -122,7 +116,7 @@ const WatchCourse = () => {
                     setCompletedLessons(prev => [...prev, activeLesson.id]);
                     toast.success('Lesson marked as complete! 🎉');
                 } else {
-                    setCompletedLessons(prev => prev.filter(id => id !== activeLesson.id));
+                    setCompletedLessons(prev => prev.filter(lId => lId !== activeLesson.id));
                     toast.success('Lesson marked as incomplete');
                 }
             }
@@ -174,7 +168,7 @@ const WatchCourse = () => {
                     <div className="hidden sm:block">
                         <h1 className="text-white font-semibold text-sm line-clamp-1">{course.title}</h1>
                         <p className="text-gray-500 text-xs mt-0.5">
-                            {progress}% complete • {allLessons.length} lessons
+                            {progress}% complete • {completedLessons.length}/{totalLessons} lessons
                         </p>
                     </div>
                 </div>
@@ -325,7 +319,7 @@ const WatchCourse = () => {
                                     style={{ width: `${progress}%` }}
                                 />
                             </div>
-                            <span className="text-gray-500 text-xs">{progress}%</span>
+                            <span className="text-gray-500 text-xs">{completedLessons.length}/{totalLessons}</span>
                         </div>
                     </div>
 
@@ -395,15 +389,20 @@ const WatchCourse = () => {
                                                     {/* Lesson Info */}
                                                     <div className="flex-1 min-w-0">
                                                         <p className={`text-sm line-clamp-1 ${
-                                                            isActive ? 'text-primary-400 font-medium' : 'text-gray-400'
+                                                            isActive ? 'text-primary-400 font-medium' :
+                                                            isCompleted ? 'text-gray-400' : 'text-gray-400'
                                                         }`}>
                                                             {lesson.title}
                                                         </p>
                                                         <p className="text-xs text-gray-600 mt-0.5">
                                                             {lesson.duration > 0 ? `${lesson.duration}m` : 'No duration'}
-                                                            {!lesson.video && ' • No video'}
                                                         </p>
                                                     </div>
+
+                                                    {/* Completed Check */}
+                                                    {isCompleted && (
+                                                        <FiCheckCircle className="text-green-500 flex-shrink-0" size={14} />
+                                                    )}
                                                 </button>
                                             );
                                         })}

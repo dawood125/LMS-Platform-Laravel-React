@@ -11,7 +11,8 @@ const courseService = {
   enrollCourse: (data) => apiClient.post("/enroll-course", data),
   getEnrollments: () => apiClient.get("/enrollments"),
   getCourseAccess: (id) => apiClient.get(`/course-access/${id}`),
-  updateActivity: (data) => apiClient.post('/update-activity', data),
+  getCourseActivities: (id) => apiClient.get(`/course-activities/${id}`),
+  updateActivity: (data) => apiClient.post("/update-activity", data),
 
   getMyCourses: () => apiClient.get("/my-courses"),
   getMetaData: () => apiClient.get("/courses/metadata"),
@@ -54,6 +55,12 @@ const courseService = {
   createRequirement: (data) => apiClient.post("/requirements", data),
   updateRequirement: (id, data) => apiClient.put(`/requirements/${id}`, data),
   deleteRequirement: (id) => apiClient.delete(`/requirements/${id}`),
+
+  // Reviews
+  getReviews: (courseId) => apiClient.get(`/reviews/${courseId}`),
+  submitReview: (data) => apiClient.post("/reviews", data),
+  deleteReview: (id) => apiClient.delete(`/reviews/${id}`),
+  getUserReview: (courseId) => apiClient.get(`/reviews/user/${courseId}`),
 };
 
 export default courseService;

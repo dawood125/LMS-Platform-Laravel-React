@@ -19,6 +19,7 @@ import {
 import courseService from "../../services/courseService";
 import { useAuth } from "../../context/AuthContext";
 import toast from "react-hot-toast";
+import ReviewSection from "../../components/ui/ReviewSection";
 
 const CourseDetail = () => {
   const { id } = useParams();
@@ -496,6 +497,8 @@ const CourseDetail = () => {
             )}
           </div>
         </div>
+        {/* ============ REVIEWS SECTION ============ */}
+        <ReviewSection courseId={id} />
       </div>
     </div>
   );

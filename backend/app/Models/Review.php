@@ -11,6 +11,16 @@ class Review extends Model
         'course_id',
         'rating',
         'comment',
-        'status'
+        'status',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
+
+    public function course()
+    {
+        return $this->belongsTo(Course::class);
+    }
 }

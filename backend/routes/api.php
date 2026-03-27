@@ -21,7 +21,7 @@ Route::get('/fetch-languages', [HomeController::class, 'getLanguages']);
 Route::get('/featured-courses', [HomeController::class, 'featuredCourses']);
 Route::get('/fetch-courses', [HomeController::class, 'courses']);
 Route::get('/course-details/{id}', [HomeController::class, 'courseDetails']);
-
+Route::get('/reviews/{courseId}', [\App\Http\Controllers\front\ReviewController::class, 'index']);
 
 Route::get('/user', function (Request $request) {
     return $request->user();
@@ -67,4 +67,15 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/course-access/{id}', [AccountController::class, 'courses']);
     Route::post('/enroll-course', [HomeController::class, 'enrollCourse']);
     Route::post('/update-activity', [AccountController::class, 'updateActivity']);
+    Route::get('/course-activities/{id}', [AccountController::class, 'getCourseActivities']);
+
+    // Reviews
+    Route::post('/reviews', [\App\Http\Controllers\front\ReviewController::class, 'store']);
+    Route::delete('/reviews/{id}', [\App\Http\Controllers\front\ReviewController::class, 'destroy']);
+    Route::get('/reviews/user/{courseId}', [\App\Http\Controllers\front\ReviewController::class, 'userReview']);
+
+    // Profile
+    Route::get('/profile', [AccountController::class, 'profile']);
+    Route::put('/profile', [AccountController::class, 'updateProfile']);
+    Route::post('/change-password', [AccountController::class, 'changePassword']);
 });

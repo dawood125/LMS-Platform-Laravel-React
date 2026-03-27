@@ -250,4 +250,113 @@ class AccountController extends Controller
             ]
         ]);
     }
+
+    public function profile(Request $request)
+    {
+        return response()->json([
+            'status' => 200,
+            'data' => $request->user()
+        ]);
+    }
+
+    public function updateProfile(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'name' => 'required|string|max:255',
+            'email' => 'required|string|email|max:255|unique:users,email,' . $request->user()->id,
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+        $user->name = $request->name;
+        $user->email = $request->email;
+        $user->save();
+
+        // Update localStorage on frontend
+        return response()->json([
+            'status' => 200,
+            'message' => 'Profile updated successfully',
+            'data' => $user
+        ]);
+    }
+
+    public function changePassword(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'current_password' => 'required|string',
+            'new_password' => 'required|string|min:8|confirmed',
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Validation failed',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $user = $request->user();
+
+        if (!password_verify($request->current_password, $user->password)) {
+            return response()->json([
+                'status' => 400,
+                'message' => 'Current password is incorrect'
+            ], 400);
+        }
+
+        $user->password = bcrypt($request->new_password);
+        $user->save();
+
+        return response()->json([
+            'status' => 200,
+            'message' => 'Password changed successfully'
+        ]);
+    }
+    public function getCourseActivities(Request $request, $id)
+    {
+        $userId = $request->user()->id;
+
+        // Check enrollment
+        $enrolled = Enrollment::where(['user_id' => $userId, 'course_id' => $id])->exists();
+        if (!$enrolled) {
+            return response()->json([
+                'status' => 403,
+                'message' => 'You are not enrolled in this course'
+            ], 403);
+        }
+
+        // Get all activities for this course
+        $activities = Activity::where([
+            'user_id' => $userId,
+            'course_id' => $id,
+        ])->get();
+
+        // Get completed lesson IDs
+        $completedLessonIds = $activities->where('is_completed', 'yes')->pluck('lesson_id')->toArray();
+
+        // Calculate progress
+        $totalLessons = Lesson::whereHas('chapter', function ($query) use ($id) {
+            $query->where('course_id', $id);
+        })->where('status', 1)->count();
+
+        $completedCount = count($completedLessonIds);
+        $progress = $totalLessons > 0 ? round(($completedCount / $totalLessons) * 100) : 0;
+
+        return response()->json([
+            'status' => 200,
+            'data' => [
+                'completed_lesson_ids' => $completedLessonIds,
+                'progress' => $progress,
+                'completed_count' => $completedCount,
+                'total_lessons' => $totalLessons,
+            ]
+        ]);
+    }
 }
