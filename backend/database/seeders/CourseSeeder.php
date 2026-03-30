@@ -15,7 +15,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Complete React Masterclass 2025',
                 'description' => 'Master React from scratch. Learn hooks, context, Redux, and build 5 real-world projects. This comprehensive course covers everything from the fundamentals to advanced patterns used in production applications. You will learn component architecture, state management, API integration, and deployment strategies.',
-                'user_id' => 1,
+                'user_id' => 2,
                 'category_id' => 1,
                 'level_id' => 1,
                 'language_id' => 1,
@@ -40,7 +40,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Laravel API Development Bootcamp',
                 'description' => 'Build powerful RESTful APIs with Laravel. Learn authentication, authorization, testing, and best practices for scalable backend development. This course covers Sanctum authentication, resource controllers, middleware, database optimization, and API documentation.',
-                'user_id' => 1,
+                'user_id' => 2,
                 'category_id' => 1,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -65,7 +65,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Python for Data Science & AI',
                 'description' => 'Learn Python programming for data science and artificial intelligence. Cover NumPy, Pandas, Matplotlib, Scikit-learn, and TensorFlow. Build real data science projects including data visualization dashboards, predictive models, and machine learning pipelines.',
-                'user_id' => 2,
+                'user_id' => 3,
                 'category_id' => 3,
                 'level_id' => 1,
                 'language_id' => 1,
@@ -90,7 +90,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Flutter Mobile App Development',
                 'description' => 'Build beautiful cross-platform mobile apps with Flutter and Dart. Learn widgets, state management, Firebase integration, and publish to both App Store and Google Play. Create 4 complete apps throughout the course.',
-                'user_id' => 2,
+                'user_id' => 3,
                 'category_id' => 2,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -115,7 +115,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'UI/UX Design with Figma',
                 'description' => 'Master modern UI/UX design principles using Figma. Learn wireframing, prototyping, design systems, and user research. Create a complete design portfolio with 3 professional projects that will help you land your first design job.',
-                'user_id' => 3,
+                'user_id' => 4,
                 'category_id' => 5,
                 'level_id' => 1,
                 'language_id' => 1,
@@ -140,7 +140,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'AWS Cloud Practitioner Certification',
                 'description' => 'Prepare for the AWS Cloud Practitioner certification exam. Learn cloud computing concepts, AWS services, security, pricing, and architecture. Includes practice exams and hands-on labs to ensure you pass on your first attempt.',
-                'user_id' => 3,
+                'user_id' => 4,
                 'category_id' => 6,
                 'level_id' => 1,
                 'language_id' => 1,
@@ -165,7 +165,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Ethical Hacking & Penetration Testing',
                 'description' => 'Learn ethical hacking from scratch. Master network scanning, vulnerability assessment, web application security, and social engineering. Use industry-standard tools like Kali Linux, Metasploit, Burp Suite, and Wireshark.',
-                'user_id' => 4,
+                'user_id' => 2,
                 'category_id' => 7,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -190,7 +190,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Docker & Kubernetes for DevOps',
                 'description' => 'Master containerization with Docker and orchestration with Kubernetes. Learn CI/CD pipelines, microservices architecture, and cloud deployment. Build production-ready infrastructure from development to deployment.',
-                'user_id' => 4,
+                'user_id' => 3,
                 'category_id' => 8,
                 'level_id' => 3,
                 'language_id' => 1,
@@ -215,7 +215,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Blockchain Development with Solidity',
                 'description' => 'Learn blockchain development from scratch. Build decentralized applications (DApps) with Solidity, Ethereum, and Web3.js. Create smart contracts, NFT marketplaces, and DeFi applications with real-world projects.',
-                'user_id' => 5,
+                'user_id' => 4,
                 'category_id' => 9,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -240,7 +240,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Digital Marketing Masterclass',
                 'description' => 'Complete digital marketing course covering SEO, Google Ads, Facebook Ads, email marketing, content marketing, and analytics. Learn strategies used by top marketing agencies to drive traffic and conversions.',
-                'user_id' => 5,
+                'user_id' => 2,
                 'category_id' => 10,
                 'level_id' => 1,
                 'language_id' => 1,
@@ -265,7 +265,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Advanced JavaScript & TypeScript',
                 'description' => 'Deep dive into advanced JavaScript concepts and TypeScript. Learn closures, prototypes, async patterns, generics, decorators, and design patterns. Write clean, type-safe, production-quality code.',
-                'user_id' => 1,
+                'user_id' => 2,
                 'category_id' => 1,
                 'level_id' => 3,
                 'language_id' => 1,
@@ -290,7 +290,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Node.js & Express Backend Development',
                 'description' => 'Build scalable backend applications with Node.js and Express. Learn REST APIs, GraphQL, MongoDB, PostgreSQL, authentication, file uploads, real-time communication with Socket.io, and testing.',
-                'user_id' => 2,
+                'user_id' => 3,
                 'category_id' => 1,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -315,7 +315,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Machine Learning with Python',
                 'description' => 'Comprehensive machine learning course. Learn supervised and unsupervised learning, neural networks, natural language processing, and computer vision. Build 10 real ML projects with Python, Scikit-learn, and TensorFlow.',
-                'user_id' => 3,
+                'user_id' => 4,
                 'category_id' => 4,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -340,7 +340,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'React Native Mobile Development',
                 'description' => 'Build native mobile apps with React Native. Learn navigation, state management, native modules, animations, and app deployment. Create 3 complete apps including a social media app and e-commerce app.',
-                'user_id' => 4,
+                'user_id' => 3,
                 'category_id' => 2,
                 'level_id' => 2,
                 'language_id' => 1,
@@ -365,7 +365,7 @@ class CourseSeeder extends Seeder
             [
                 'title' => 'Full Stack Web Development Bootcamp',
                 'description' => 'Complete full stack development course. Master HTML, CSS, JavaScript, React, Node.js, Express, MongoDB, and deployment. Build 8 projects from simple websites to complex full-stack applications.',
-                'user_id' => 1,
+                'user_id' => 2,
                 'category_id' => 1,
                 'level_id' => 1,
                 'language_id' => 1,

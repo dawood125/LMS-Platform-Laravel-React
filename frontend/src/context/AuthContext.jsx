@@ -8,6 +8,7 @@ export const AuthProvider = ({ children }) => {
     const [user, setUser] = useState(null);
     const [loading, setLoading] = useState(true);
 
+    // On app load — check if user is already logged in
     useEffect(() => {
         const token = localStorage.getItem('token');
         const savedUser = localStorage.getItem('user');
@@ -21,11 +22,12 @@ export const AuthProvider = ({ children }) => {
     const login = async (credentials) => {
         try {
             const response = await authService.login(credentials);
-            const { token, name, id } = response.data;
+            const { token, name, id, role } = response.data;
 
+            const userData = { id, name, role };
             localStorage.setItem('token', token);
-            localStorage.setItem('user', JSON.stringify({ id, name }));
-            setUser({ id, name });
+            localStorage.setItem('user', JSON.stringify(userData));
+            setUser(userData);
             toast.success('Login successful!');
             return true;
         } catch (error) {
@@ -55,6 +57,7 @@ export const AuthProvider = ({ children }) => {
         try {
             await authService.logout();
         } catch (error) {
+            // Token might already be invalid
         }
         localStorage.removeItem('token');
         localStorage.removeItem('user');
@@ -62,16 +65,29 @@ export const AuthProvider = ({ children }) => {
         toast.success('Logged out successfully');
     };
 
+    const updateUser = (updatedData) => {
+        const newUser = { ...user, ...updatedData };
+        localStorage.setItem('user', JSON.stringify(newUser));
+        setUser(newUser);
+    };
+
     const isAuthenticated = !!user;
+    const isAdmin = user?.role === 'admin';
+    const isInstructor = user?.role === 'instructor';
+    const isStudent = user?.role === 'student';
 
     return (
         <AuthContext.Provider value={{
             user,
             loading,
             isAuthenticated,
+            isAdmin,
+            isInstructor,
+            isStudent,
             login,
             register,
             logout,
+            updateUser,
         }}>
             {children}
         </AuthContext.Provider>

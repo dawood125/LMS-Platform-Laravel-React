@@ -38,6 +38,7 @@ class AccountController extends Controller
             'name' => $request->name,
             'email' => $request->email,
             'password' => bcrypt($request->password),
+            'role' => $request->role ?? 'student',
         ]);
         return response()->json([
             'status' => 201,
@@ -63,16 +64,15 @@ class AccountController extends Controller
         }
 
         if (Auth::attempt(['email' => $request->email, 'password' => $request->password])) {
-
             $user = User::find(Auth::user()->id);
-
             $token = $user->createToken('token')->plainTextToken;
 
             return response()->json([
                 'status' => 200,
                 'token' => $token,
                 'name' => $user->name,
-                'id' => Auth::user()->id
+                'id' => Auth::user()->id,
+                'role' => $user->role,
             ]);
         }
 
@@ -253,10 +253,16 @@ class AccountController extends Controller
 
     public function profile(Request $request)
     {
-        return response()->json([
-            'status' => 200,
-            'data' => $request->user()
-        ]);
+       return response()->json([
+        'status' => 200,
+        'data' => [
+            'id' => $request->user()->id,
+            'name' => $request->user()->name,
+            'email' => $request->user()->email,
+            'role' => $request->user()->role,
+            'created_at' => $request->user()->created_at,
+        ]
+    ]);
     }
 
     public function updateProfile(Request $request)

@@ -22,6 +22,8 @@ import Enrollments from "./pages/student/Enrollments";
 import WatchCourse from "./pages/student/WatchCourse";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
+import RoleRoute from "./components/ui/RoleRoute";
+import ScrollToTop from './components/ui/ScrollToTop';
 
 // Wrapper to conditionally show layout
 const AppContent = () => {
@@ -36,6 +38,7 @@ const AppContent = () => {
 
   return (
     <>
+    <ScrollToTop />
       {/* Toast Notifications */}
       <Toaster
         position="top-right"
@@ -82,25 +85,25 @@ const AppContent = () => {
             <Route
               path="/instructor/courses"
               element={
-                <ProtectedRoute>
+                <RoleRoute roles={["instructor", "admin"]}>
                   <InstructorCourses />
-                </ProtectedRoute>
+                </RoleRoute>
               }
             />
             <Route
               path="/instructor/courses/create"
               element={
-                <ProtectedRoute>
+                <RoleRoute roles={["instructor", "admin"]}>
                   <CreateCourse />
-                </ProtectedRoute>
+                </RoleRoute>
               }
             />
             <Route
               path="/instructor/courses/:id/edit"
               element={
-                <ProtectedRoute>
+                <RoleRoute roles={["instructor", "admin"]}>
                   <EditCourse />
-                </ProtectedRoute>
+                </RoleRoute>
               }
             />
 
