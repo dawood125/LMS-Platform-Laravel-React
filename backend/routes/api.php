@@ -9,6 +9,7 @@ use App\Http\Controllers\front\OutcomeController;
 use App\Http\Controllers\front\RequirementController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\front\AdminController;
 
 Route::post('/register', [AccountController::class, 'register']);
 Route::post('/login', [AccountController::class, 'login']);
@@ -78,4 +79,12 @@ Route::group(['middleware' => ['auth:sanctum']], function () {
     Route::get('/profile', [AccountController::class, 'profile']);
     Route::put('/profile', [AccountController::class, 'updateProfile']);
     Route::post('/change-password', [AccountController::class, 'changePassword']);
+
+    // Admin Routes
+    Route::get('/admin/dashboard', [AdminController::class, 'dashboard']);
+    Route::get('/admin/users', [AdminController::class, 'users']);
+    Route::put('/admin/users/{id}/role', [AdminController::class, 'updateUserRole']);
+    Route::delete('/admin/users/{id}', [AdminController::class, 'deleteUser']);
+    Route::get('/admin/courses', [AdminController::class, 'courses']);
+    Route::put('/admin/courses/{id}/status', [AdminController::class, 'updateCourseStatus']);
 });

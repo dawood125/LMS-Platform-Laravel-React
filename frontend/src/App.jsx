@@ -23,13 +23,12 @@ import WatchCourse from "./pages/student/WatchCourse";
 import NotFound from "./pages/NotFound";
 import Profile from "./pages/Profile";
 import RoleRoute from "./components/ui/RoleRoute";
-import ScrollToTop from './components/ui/ScrollToTop';
+import ScrollToTop from "./components/ui/ScrollToTop";
+import AdminDashboard from "./pages/admin/AdminDashboard";
 
-// Wrapper to conditionally show layout
 const AppContent = () => {
   const location = useLocation();
 
-  // Pages that should NOT have navbar/footer
   const noLayoutRoutes = ["/student/courses"];
   const isNoLayout = noLayoutRoutes.some(
     (route) =>
@@ -38,7 +37,7 @@ const AppContent = () => {
 
   return (
     <>
-    <ScrollToTop />
+      <ScrollToTop />
       {/* Toast Notifications */}
       <Toaster
         position="top-right"
@@ -124,6 +123,16 @@ const AppContent = () => {
                 <ProtectedRoute>
                   <Profile />
                 </ProtectedRoute>
+              }
+            />
+
+            {/* Protected - Admin Routes */}
+            <Route
+              path="/admin"
+              element={
+                <RoleRoute roles={["admin"]}>
+                  <AdminDashboard />
+                </RoleRoute>
               }
             />
 
